@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finding x- and y-Intercepts — Interactive Lesson</title>
+<style>
+  :root {
+    --navy: #0b2545;
+    --teal: #1f7a6c;
+    --teal-dark: #145a4f;
+    --gold: #b8860b;
+    --red: #b3261e;
+    --green: #1b7a2e;
+    --lightblue: #eaf3fb;
+    --lightgreen: #eaf6ec;
+    --lightgold: #fff7e6;
+    --lightred: #fdeceb;
+    --border: #d7dee6;
+    --bg: #f7f9fb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Calibri, Arial, sans-serif;
+    color: #1c1c1c;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 28px 24px 70px; }
+  header.page-header {
+    background: linear-gradient(135deg, var(--navy), var(--teal-dark));
+    color: white;
+    padding: 34px 24px;
+    text-align: center;
+  }
+  header.page-header h1 { margin: 0 0 6px; font-size: 27px; }
+  header.page-header p { margin: 0; font-size: 15px; opacity: 0.9; }
+
+  .tabs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 26px 0 22px; border-bottom: 3px solid var(--border);
+  }
+  .tab-btn {
+    background: #e9eef3; border: none; border-radius: 8px 8px 0 0;
+    padding: 12px 16px; font-size: 14.5px; font-weight: 600; color: var(--navy);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .tab-btn:hover { background: #dbe6ef; }
+  .tab-btn.active { background: var(--navy); color: white; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  h2.section-title {
+    color: var(--navy); font-size: 22px; border-bottom: 3px solid var(--teal);
+    padding-bottom: 8px; margin-top: 0;
+  }
+  h3.sub-title { color: var(--teal-dark); font-size: 17px; margin-top: 26px; }
+
+  .card {
+    background: white; border: 1px solid var(--border); border-radius: 10px;
+    padding: 22px 24px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .note {
+    background: var(--lightgold); border-left: 4px solid var(--gold);
+    padding: 12px 16px; font-size: 14.5px; margin: 16px 0; border-radius: 4px;
+  }
+  .rule {
+    background: var(--lightblue); border-left: 4px solid var(--navy);
+    padding: 12px 16px; font-size: 15px; margin: 14px 0; border-radius: 4px;
+  }
+  .instructions {
+    background: #eef6fb; border: 1.5px dashed var(--teal);
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; font-size: 14.5px;
+  }
+  .instructions strong { color: var(--teal-dark); }
+
+  .def-box {
+    display: flex; gap: 18px; flex-wrap: wrap; margin: 16px 0;
+  }
+  .def-card {
+    flex: 1; min-width: 250px;
+    background: #f7fafc; border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .def-card h4 { margin: 0 0 8px; color: var(--navy); font-size: 16px; }
+  .def-card .formula {
+    font-family: "Cambria Math", Cambria, Georgia, serif; font-size: 18px;
+    color: var(--teal-dark); font-weight: 700; margin: 6px 0;
+  }
+
+  /* Graph layout */
+  .graph-layout { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; justify-content: center; }
+  .graph-svg-wrap { flex: 0 0 auto; }
+  svg.plot { background: white; border: 1px solid var(--border); border-radius: 8px; touch-action: none; }
+  .info-panel {
+    flex: 1; min-width: 220px;
+    background: var(--lightgreen); border: 2px solid var(--teal);
+    border-radius: 10px; padding: 16px 20px;
+  }
+  .info-panel .eq-display {
+    font-family: "Cambria Math", Cambria, Georgia, serif; font-size: 19px;
+    font-weight: 700; color: var(--navy); margin-bottom: 12px;
+  }
+  .info-row { margin: 8px 0; font-size: 15px; }
+  .info-row .dot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:8px; }
+  .dot-x { background: var(--red); }
+  .dot-y { background: var(--green); }
+
+  .slider-group { margin: 14px 0; }
+  .slider-group label { font-weight: 700; color: var(--navy); font-family: "Cambria Math", Cambria, Georgia, serif; }
+  .slider-group input[type=range] { width: 100%; margin-top: 4px; }
+  .slider-readout { font-weight: 700; color: var(--teal-dark); float: right; }
+
+  .action-btn, .check-btn, .reveal-btn {
+    background: var(--teal); color: white; border: none; border-radius: 6px;
+    padding: 9px 20px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px;
+  }
+  .action-btn:hover, .check-btn:hover, .reveal-btn:hover { background: var(--teal-dark); }
+  .reveal-btn { background: var(--gold); }
+  .reveal-btn:hover { background: #9a6f08; }
+
+  /* Worked examples */
+  .worked-example { border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 18px 0; background: white; }
+  .worked-example h4 { margin: 0 0 6px; color: var(--navy); }
+  .math-block {
+    background: var(--lightblue); border-left: 4px solid var(--navy);
+    padding: 12px 18px; margin: 10px 0; border-radius: 4px; font-family: "Cambria Math", Cambria, Georgia, serif; font-size: 16px;
+  }
+  .math-line { margin: 4px 0; }
+  .answer-chip {
+    display:inline-block; background: var(--lightgreen); color: var(--green);
+    border: 1.5px solid var(--green); border-radius: 20px; padding: 4px 14px;
+    font-weight: 700; font-size: 14px; margin: 3px 6px 3px 0;
+  }
+
+  /* Practice (ungraded) */
+  .practice-item { border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin: 18px 0; background: white; }
+  .practice-item h4 { margin: 0 0 8px; color: var(--navy); }
+  .solution-box { display: none; margin-top: 12px; background: var(--lightgreen); border-radius: 8px; padding: 12px 16px; font-size: 14.5px; }
+  .solution-box.shown { display: block; }
+
+  /* Assignment / quiz */
+  .quiz-question { border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin: 20px 0; background: white; }
+  .quiz-question h4 { margin: 0 0 4px; color: var(--navy); font-size: 16px; }
+  .quiz-tag {
+    display: inline-block; background: var(--lightblue); color: var(--navy);
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 12px; margin-bottom: 10px; letter-spacing: 0.3px;
+  }
+  .given-block { background: #f7fafc; border: 1px solid var(--border); border-radius: 8px; padding: 14px 20px; margin: 12px 0; text-align: center; font-family: "Cambria Math", Cambria, Georgia, serif; font-size: 18px; }
+  .answer-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; font-family: "Cambria Math", Cambria, Georgia, serif; font-size: 16px; flex-wrap: wrap; }
+  .ans-input { width: 66px; text-align: center; font-size: 15px; padding: 6px 4px; border: 1.5px solid var(--border); border-radius: 6px; font-family: "Cambria Math", Cambria, Georgia, serif; }
+  .ans-input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(31,122,108,0.15); }
+  .feedback { margin-top: 10px; font-weight: 600; font-size: 14.5px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .feedback.correct { background: var(--lightgreen); color: var(--green); display: block; }
+  .feedback.incorrect { background: var(--lightred); color: var(--red); display: block; }
+
+  .score-panel {
+    background: linear-gradient(135deg, var(--navy), var(--teal-dark)); color: white;
+    border-radius: 10px; padding: 28px; text-align: center; margin-top: 30px;
+  }
+  .score-panel .big-score { font-size: 40px; font-weight: 800; margin: 8px 0; }
+  .score-panel .action-btn { background: var(--gold); margin-top: 14px; }
+  .score-panel .action-btn:hover { background: #9a6f08; }
+
+  footer.page-footer { text-align: center; color: #888; font-size: 12.5px; padding: 20px; border-top: 1px solid var(--border); margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>Finding x- and y-Intercepts</h1>
+  <p>Where a graph crosses the axes — for lines and parabolas</p>
+</header>
+
+<div class="wrap">
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-def" onclick="switchTab('tab-def')">1. Definition</button>
+    <button class="tab-btn" data-tab="tab-graphs" onclick="switchTab('tab-graphs')">2. Interactive Graphs</button>
+    <button class="tab-btn" data-tab="tab-examples" onclick="switchTab('tab-examples')">3. Worked Examples</button>
+    <button class="tab-btn" data-tab="tab-practice" onclick="switchTab('tab-practice')">4. Practice</button>
+    <button class="tab-btn" data-tab="tab-quiz" onclick="switchTab('tab-quiz')">5. Assignment (Scored)</button>
+  </div>
+
+  <!-- ============ TAB 1: DEFINITION ============ -->
+  <div class="tab-panel active" id="tab-def">
+    <h2 class="section-title">What Are Intercepts?</h2>
+    <div class="card">
+      <p>An <strong>intercept</strong> is a point where a graph crosses one of the axes. Every graph can have two kinds of intercepts:</p>
+
+      <div class="def-box">
+        <div class="def-card">
+          <h4>x-intercept</h4>
+          <p>The point where the graph crosses the <strong>x-axis</strong>. At every point on the x-axis, the height is zero, so:</p>
+          <div class="formula">y = 0</div>
+          <p>Written as an ordered pair: <strong>(a, 0)</strong></p>
+        </div>
+        <div class="def-card">
+          <h4>y-intercept</h4>
+          <p>The point where the graph crosses the <strong>y-axis</strong>. At every point on the y-axis, you haven't moved left or right at all, so:</p>
+          <div class="formula">x = 0</div>
+          <p>Written as an ordered pair: <strong>(0, b)</strong></p>
+        </div>
+      </div>
+
+      <div class="rule">
+        <strong>The key idea:</strong> to find an intercept, you simply substitute <strong>0</strong> for the <em>other</em> variable and solve.
+        Substitute <strong>y = 0</strong> to find the x-intercept. Substitute <strong>x = 0</strong> to find the y-intercept.
+      </div>
+
+      <h3 class="sub-title">Lines vs. Parabolas</h3>
+      <p>A straight <strong>line</strong> (unless it's horizontal or vertical) crosses the x-axis exactly <strong>once</strong> and the y-axis exactly <strong>once</strong>.</p>
+      <p>A <strong>parabola</strong> always crosses the y-axis exactly once (parabolas pass the vertical line test), but it can cross the x-axis <strong>zero, one, or two times</strong> depending on whether the vertex sits above, on, or below the x-axis.</p>
+
+      <div class="note">
+        <strong>Tip:</strong> for a parabola, the number of x-intercepts is determined by the discriminant, <em>b&sup2; &minus; 4ac</em>. If it's positive, there are two x-intercepts. If it's zero, there's exactly one (the vertex touches the x-axis). If it's negative, there are none — the parabola never crosses the x-axis. You'll see this live in the next tab!
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 2: INTERACTIVE GRAPHS ============ -->
+  <div class="tab-panel" id="tab-graphs">
+    <h2 class="section-title">Interactive Graph 1: A Line</h2>
+    <div class="card">
+      <div class="instructions">
+        <strong>What to do:</strong> drag either of the two blue points anywhere on the grid. As you move them, the line updates, and the app recalculates and displays the equation of the line, the red x-intercept, and the green y-intercept.
+      </div>
+      <div class="graph-layout">
+        <div class="graph-svg-wrap">
+          <svg id="linear-svg" class="plot" viewBox="0 0 500 500" width="440" height="440"></svg>
+        </div>
+        <div class="info-panel">
+          <div class="eq-display" id="linear-eq-display">y = x + 2</div>
+          <div class="info-row"><span class="dot dot-x"></span><strong>x-intercept:</strong> <span id="linear-x-int">(-2, 0)</span></div>
+          <div class="info-row"><span class="dot dot-y"></span><strong>y-intercept:</strong> <span id="linear-y-int">(0, 2)</span></div>
+          <button class="action-btn" onclick="resetLinear()">Reset Line</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:36px;">Interactive Graph 2: A Parabola</h2>
+    <div class="card">
+      <div class="instructions">
+        <strong>What to do:</strong> drag the three sliders below to change <strong>a</strong>, <strong>b</strong>, and <strong>c</strong> in y = ax&sup2; + bx + c. Watch how the shape of the parabola changes, and see how many times it crosses the x-axis (zero, one, or two x-intercepts) versus the y-axis (always exactly one).
+      </div>
+      <div class="graph-layout">
+        <div class="graph-svg-wrap">
+          <svg id="parabola-svg" class="plot" viewBox="0 0 500 500" width="440" height="440"></svg>
+        </div>
+        <div class="info-panel">
+          <div class="eq-display" id="parabola-eq-display">y = x&sup2; &minus; 4</div>
+
+          <div class="slider-group">
+            <label>a = <span class="slider-readout" id="a-readout">1.0</span></label>
+            <input type="range" id="a-slider" min="-3" max="3" step="0.1" value="1">
+          </div>
+          <div class="slider-group">
+            <label>b = <span class="slider-readout" id="b-readout">0.0</span></label>
+            <input type="range" id="b-slider" min="-10" max="10" step="0.5" value="0">
+          </div>
+          <div class="slider-group">
+            <label>c = <span class="slider-readout" id="c-readout">-4.0</span></label>
+            <input type="range" id="c-slider" min="-10" max="10" step="0.5" value="-4">
+          </div>
+
+          <div class="info-row"><span class="dot dot-x"></span><strong>x-intercept(s):</strong> <span id="parabola-x-int">(-2, 0) and (2, 0)</span></div>
+          <div class="info-row"><span class="dot dot-y"></span><strong>y-intercept:</strong> <span id="parabola-y-int">(0, -4)</span></div>
+          <button class="action-btn" onclick="resetParabola()">Reset Parabola</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 3: WORKED EXAMPLES ============ -->
+  <div class="tab-panel" id="tab-examples">
+    <h2 class="section-title">Finding Intercepts Algebraically</h2>
+    <p>To find intercepts without a graph, substitute 0 for the other variable and solve. Here are four worked examples.</p>
+
+    <div class="worked-example">
+      <h4>Example 1:  2x + 3y = 12</h4>
+      <div class="math-block">
+        <div class="math-line"><strong>x-intercept</strong> (set y = 0):&nbsp; 2x + 3(0) = 12 &rarr; 2x = 12 &rarr; x = 6</div>
+        <div class="math-line"><strong>y-intercept</strong> (set x = 0):&nbsp; 2(0) + 3y = 12 &rarr; 3y = 12 &rarr; y = 4</div>
+      </div>
+      <span class="answer-chip">x-intercept: (6, 0)</span>
+      <span class="answer-chip">y-intercept: (0, 4)</span>
+    </div>
+
+    <div class="worked-example">
+      <h4>Example 2:  y = &minus;3x + 9</h4>
+      <div class="math-block">
+        <div class="math-line"><strong>x-intercept</strong> (set y = 0):&nbsp; 0 = &minus;3x + 9 &rarr; 3x = 9 &rarr; x = 3</div>
+        <div class="math-line"><strong>y-intercept</strong> (set x = 0):&nbsp; y = &minus;3(0) + 9 &rarr; y = 9</div>
+      </div>
+      <span class="answer-chip">x-intercept: (3, 0)</span>
+      <span class="answer-chip">y-intercept: (0, 9)</span>
+    </div>
+
+    <div class="worked-example">
+      <h4>Example 3:  5x &minus; 2y = &minus;10</h4>
+      <div class="math-block">
+        <div class="math-line"><strong>x-intercept</strong> (set y = 0):&nbsp; 5x &minus; 2(0) = &minus;10 &rarr; 5x = &minus;10 &rarr; x = &minus;2</div>
+        <div class="math-line"><strong>y-intercept</strong> (set x = 0):&nbsp; 5(0) &minus; 2y = &minus;10 &rarr; &minus;2y = &minus;10 &rarr; y = 5</div>
+      </div>
+      <span class="answer-chip">x-intercept: (-2, 0)</span>
+      <span class="answer-chip">y-intercept: (0, 5)</span>
+    </div>
+
+    <div class="worked-example">
+      <h4>Example 4:  x &minus; 4y = 6&nbsp; (an example with a fractional answer)</h4>
+      <div class="math-block">
+        <div class="math-line"><strong>x-intercept</strong> (set y = 0):&nbsp; x &minus; 4(0) = 6 &rarr; x = 6</div>
+        <div class="math-line"><strong>y-intercept</strong> (set x = 0):&nbsp; 0 &minus; 4y = 6 &rarr; &minus;4y = 6 &rarr; y = &minus;1.5</div>
+      </div>
+      <span class="answer-chip">x-intercept: (6, 0)</span>
+      <span class="answer-chip">y-intercept: (0, -1.5)</span>
+      <div class="note" style="margin-top:12px;">Intercepts don't have to be whole numbers — always simplify the fraction or decimal completely.</div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 4: PRACTICE (UNGRADED) ============ -->
+  <div class="tab-panel" id="tab-practice">
+    <h2 class="section-title">Practice (Self-Check, Not Graded)</h2>
+    <p>Work these out on paper, then click <strong>Reveal Solution</strong> to check yourself.</p>
+
+    <div class="practice-item">
+      <h4>Practice 1:&nbsp; y = 2x + 6</h4>
+      <button class="reveal-btn" onclick="toggleSolution('sol1')">Reveal Solution</button>
+      <div class="solution-box" id="sol1">
+        <div>x-intercept (y = 0): 0 = 2x + 6 &rarr; x = &minus;3 &rarr; <strong>(-3, 0)</strong></div>
+        <div>y-intercept (x = 0): y = 2(0) + 6 &rarr; y = 6 &rarr; <strong>(0, 6)</strong></div>
+      </div>
+    </div>
+
+    <div class="practice-item">
+      <h4>Practice 2:&nbsp; 4x &minus; y = 8</h4>
+      <button class="reveal-btn" onclick="toggleSolution('sol2')">Reveal Solution</button>
+      <div class="solution-box" id="sol2">
+        <div>x-intercept (y = 0): 4x &minus; 0 = 8 &rarr; x = 2 &rarr; <strong>(2, 0)</strong></div>
+        <div>y-intercept (x = 0): 4(0) &minus; y = 8 &rarr; y = &minus;8 &rarr; <strong>(0, -8)</strong></div>
+      </div>
+    </div>
+
+    <div class="practice-item">
+      <h4>Practice 3:&nbsp; y = x&sup2; &minus; 1&nbsp; (a parabola — look for two x-intercepts)</h4>
+      <button class="reveal-btn" onclick="toggleSolution('sol3')">Reveal Solution</button>
+      <div class="solution-box" id="sol3">
+        <div>x-intercepts (y = 0): 0 = x&sup2; &minus; 1 &rarr; x&sup2; = 1 &rarr; x = 1 or x = &minus;1 &rarr; <strong>(1, 0) and (-1, 0)</strong></div>
+        <div>y-intercept (x = 0): y = 0&sup2; &minus; 1 &rarr; y = &minus;1 &rarr; <strong>(0, -1)</strong></div>
+      </div>
+    </div>
+
+    <div class="practice-item">
+      <h4>Practice 4:&nbsp; y = x&sup2; + 2x + 1&nbsp; (a parabola — how many x-intercepts does this one have?)</h4>
+      <button class="reveal-btn" onclick="toggleSolution('sol4')">Reveal Solution</button>
+      <div class="solution-box" id="sol4">
+        <div>x-intercept (y = 0): 0 = x&sup2; + 2x + 1 = (x + 1)&sup2; &rarr; x = &minus;1 (a repeated root) &rarr; <strong>only one x-intercept: (-1, 0)</strong></div>
+        <div>y-intercept (x = 0): y = 0 + 0 + 1 &rarr; y = 1 &rarr; <strong>(0, 1)</strong></div>
+        <div style="margin-top:6px;">This parabola's vertex sits exactly <em>on</em> the x-axis, so it touches but doesn't cross &mdash; giving exactly one x-intercept.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 5: ASSIGNMENT (SCORED) ============ -->
+  <div class="tab-panel" id="tab-quiz">
+    <h2 class="section-title">Assignment &mdash; 5 Questions</h2>
+    <p>Find the requested intercept(s) for each equation, then click <strong>Check Answer</strong>. When you're done, click <strong>Calculate My Score</strong>.</p>
+
+    <!-- Q1 -->
+    <div class="quiz-question" id="q1">
+      <span class="quiz-tag">Line &nbsp;|&nbsp; Slope-Intercept Form</span>
+      <h4>Question 1</h4>
+      <div class="given-block">y = 4x &minus; 8</div>
+      <div class="answer-row">x-intercept:&nbsp; ( <input type="text" class="ans-input" id="q1-x"> , 0 )</div>
+      <div class="answer-row">y-intercept:&nbsp; ( 0 , <input type="text" class="ans-input" id="q1-y"> )</div>
+      <button class="check-btn" onclick="checkQ1()">Check Answer</button>
+      <div class="feedback" id="q1-feedback"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-question" id="q2">
+      <span class="quiz-tag">Line &nbsp;|&nbsp; Standard Form</span>
+      <h4>Question 2</h4>
+      <div class="given-block">3x + 2y = 6</div>
+      <div class="answer-row">x-intercept:&nbsp; ( <input type="text" class="ans-input" id="q2-x"> , 0 )</div>
+      <div class="answer-row">y-intercept:&nbsp; ( 0 , <input type="text" class="ans-input" id="q2-y"> )</div>
+      <button class="check-btn" onclick="checkQ2()">Check Answer</button>
+      <div class="feedback" id="q2-feedback"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-question" id="q3">
+      <span class="quiz-tag">Line &nbsp;|&nbsp; Standard Form, Negative Coefficients</span>
+      <h4>Question 3</h4>
+      <div class="given-block">&minus;2x + 5y = 10</div>
+      <div class="answer-row">x-intercept:&nbsp; ( <input type="text" class="ans-input" id="q3-x"> , 0 )</div>
+      <div class="answer-row">y-intercept:&nbsp; ( 0 , <input type="text" class="ans-input" id="q3-y"> )</div>
+      <button class="check-btn" onclick="checkQ3()">Check Answer</button>
+      <div class="feedback" id="q3-feedback"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-question" id="q4">
+      <span class="quiz-tag">Parabola &nbsp;|&nbsp; Two x-intercepts</span>
+      <h4>Question 4</h4>
+      <div class="given-block">y = x&sup2; &minus; 9</div>
+      <div class="answer-row">x-intercepts:&nbsp; ( <input type="text" class="ans-input" id="q4-x1"> , 0 )&nbsp; and&nbsp; ( <input type="text" class="ans-input" id="q4-x2"> , 0 )</div>
+      <div class="answer-row">y-intercept:&nbsp; ( 0 , <input type="text" class="ans-input" id="q4-y"> )</div>
+      <button class="check-btn" onclick="checkQ4()">Check Answer</button>
+      <div class="feedback" id="q4-feedback"></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-question" id="q5">
+      <span class="quiz-tag">Parabola &nbsp;|&nbsp; Factor First</span>
+      <h4>Question 5</h4>
+      <div class="given-block">y = x&sup2; &minus; 2x &minus; 8</div>
+      <div class="answer-row">x-intercepts:&nbsp; ( <input type="text" class="ans-input" id="q5-x1"> , 0 )&nbsp; and&nbsp; ( <input type="text" class="ans-input" id="q5-x2"> , 0 )</div>
+      <div class="answer-row">y-intercept:&nbsp; ( 0 , <input type="text" class="ans-input" id="q5-y"> )</div>
+      <button class="check-btn" onclick="checkQ5()">Check Answer</button>
+      <div class="feedback" id="q5-feedback"></div>
+    </div>
+
+    <div class="score-panel">
+      <div style="font-size:14px; opacity:0.85; text-transform:uppercase; letter-spacing:0.5px;">Your Results</div>
+      <div class="big-score" id="final-score-display">— / 5</div>
+      <div id="final-score-message" style="font-size:15px;"></div>
+      <button class="action-btn" onclick="calculateScore()">Calculate My Score</button>
+    </div>
+  </div>
+
+</div>
+
+<footer class="page-footer">
+  MAT 1460/1455 &middot; x- and y-Intercepts &middot; Interactive Lesson
+</footer>
+
+<script>
+/* ============================================================
+   TAB SWITCHING
+   ============================================================ */
+function switchTab(id) {
+  var panels = document.querySelectorAll(".tab-panel");
+  for (var i = 0; i < panels.length; i++) { panels[i].classList.remove("active"); }
+  var btns = document.querySelectorAll(".tab-btn");
+  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove("active"); }
+  document.getElementById(id).classList.add("active");
+  document.querySelector('.tab-btn[data-tab="' + id + '"]').classList.add("active");
+}
+
+/* ============================================================
+   COORDINATE HELPERS (shared)
+   Plot range: x in [-10,10], y in [-10,10] mapped to a 500x500 viewBox
+   ============================================================ */
+var PLOT_MIN = -10, PLOT_MAX = 10, VB = 500;
+var SCALE = VB / (PLOT_MAX - PLOT_MIN); // px per unit
+
+function toPx(x, y) {
+  return { px: (x - PLOT_MIN) * SCALE, py: VB - (y - PLOT_MIN) * SCALE };
+}
+function fromPx(px, py) {
+  return { x: px / SCALE + PLOT_MIN, y: (VB - py) / SCALE + PLOT_MIN };
+}
+function round2(n) {
+  return Math.round(n * 100) / 100;
+}
+function fmtCoord(n) {
+  var r = round2(n);
+  if (Object.is(r, -0)) r = 0;
+  return r;
+}
+
+function svgEl(tag, attrs) {
+  var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (var k in attrs) { el.setAttribute(k, attrs[k]); }
+  return el;
+}
+
+function drawGridAndAxes(svg) {
+  // clear
+  svg.innerHTML = "";
+  var gridGroup = svgEl("g", {});
+  for (var u = PLOT_MIN; u <= PLOT_MAX; u++) {
+    var isMajor = (u % 5 === 0);
+    var p1 = toPx(u, PLOT_MIN);
+    var p2 = toPx(u, PLOT_MAX);
+    gridGroup.appendChild(svgEl("line", {
+      x1: p1.px, y1: p1.py, x2: p2.px, y2: p2.py,
+      stroke: isMajor ? "#c3ccd6" : "#e8edf2", "stroke-width": isMajor ? 1.2 : 0.7
+    }));
+    var q1 = toPx(PLOT_MIN, u);
+    var q2 = toPx(PLOT_MAX, u);
+    gridGroup.appendChild(svgEl("line", {
+      x1: q1.px, y1: q1.py, x2: q2.px, y2: q2.py,
+      stroke: isMajor ? "#c3ccd6" : "#e8edf2", "stroke-width": isMajor ? 1.2 : 0.7
+    }));
+  }
+  svg.appendChild(gridGroup);
+
+  // axes
+  var xAxis1 = toPx(PLOT_MIN, 0), xAxis2 = toPx(PLOT_MAX, 0);
+  var yAxis1 = toPx(0, PLOT_MIN), yAxis2 = toPx(0, PLOT_MAX);
+  svg.appendChild(svgEl("line", { x1: xAxis1.px, y1: xAxis1.py, x2: xAxis2.px, y2: xAxis2.py, stroke: "#0b2545", "stroke-width": 2 }));
+  svg.appendChild(svgEl("line", { x1: yAxis1.px, y1: yAxis1.py, x2: yAxis2.px, y2: yAxis2.py, stroke: "#0b2545", "stroke-width": 2 }));
+
+  // tick labels every 2 units
+  for (var t = PLOT_MIN; t <= PLOT_MAX; t += 2) {
+    if (t === 0) continue;
+    var tp = toPx(t, 0);
+    var lbl = svgEl("text", { x: tp.px, y: tp.py + 14, "font-size": "10", fill: "#555", "text-anchor": "middle" });
+    lbl.textContent = t;
+    svg.appendChild(lbl);
+    var tp2 = toPx(0, t);
+    var lbl2 = svgEl("text", { x: tp2.px - 6, y: tp2.py + 3, "font-size": "10", fill: "#555", "text-anchor": "end" });
+    lbl2.textContent = t;
+    svg.appendChild(lbl2);
+  }
+  var origin = toPx(0, 0);
+  var olbl = svgEl("text", { x: origin.px - 8, y: origin.py + 14, "font-size": "10", fill: "#555", "text-anchor": "end" });
+  olbl.textContent = "0";
+  svg.appendChild(olbl);
+}
+
+function addIntercepMarker(svg, x, y, color, label) {
+  var p = toPx(x, y);
+  var c = svgEl("circle", { cx: p.px, cy: p.py, r: 6, fill: color, stroke: "white", "stroke-width": 2 });
+  svg.appendChild(c);
+  var t = svgEl("text", {
+    x: p.px + (x >= 0 ? 10 : -10), y: p.py - 10, "font-size": "12", "font-weight": "700",
+    fill: color, "text-anchor": (x >= 0 ? "start" : "end")
+  });
+  t.textContent = label;
+  svg.appendChild(t);
+}
+
+/* ============================================================
+   LINEAR GRAPH (draggable two-point line)
+   ============================================================ */
+var linearSvg = document.getElementById("linear-svg");
+var linearDefaultPoints = [{ x: -3, y: -1 }, { x: 2, y: 4 }]; // on line y = x + 2
+var linearPoints = [
+  { x: linearDefaultPoints[0].x, y: linearDefaultPoints[0].y },
+  { x: linearDefaultPoints[1].x, y: linearDefaultPoints[1].y }
+];
+var draggingHandle = null;
+
+function getSvgUserPoint(svg, evt) {
+  var rect = svg.getBoundingClientRect();
+  var clientX = evt.clientX, clientY = evt.clientY;
+  var px = (clientX - rect.left) / rect.width * VB;
+  var py = (clientY - rect.top) / rect.height * VB;
+  return fromPx(px, py);
+}
+
+function clampToRange(v) {
+  return Math.max(PLOT_MIN, Math.min(PLOT_MAX, v));
+}
+
+function renderLinear() {
+  drawGridAndAxes(linearSvg);
+
+  var p1 = linearPoints[0], p2 = linearPoints[1];
+  var dx = p2.x - p1.x, dy = p2.y - p1.y;
+  var isVertical = Math.abs(dx) < 0.0001;
+
+  var m, b;
+  var eqText, xIntText, yIntText;
+  var xInt = null, yInt = null;
+
+  if (isVertical) {
+    // Vertical line x = p1.x
+    eqText = "x = " + fmtCoord(p1.x);
+    xInt = p1.x;
+    xIntText = "(" + fmtCoord(p1.x) + ", 0)";
+    if (Math.abs(p1.x) < 0.0001) {
+      yInt = 0;
+      yIntText = "(0, 0)";
+    } else {
+      yIntText = "none (the line never crosses the y-axis)";
+    }
+  } else {
+    m = dy / dx;
+    b = p1.y - m * p1.x;
+    var mRound = round2(m), bRound = round2(b);
+    eqText = "y = " + fmtEquationLinear(mRound, bRound);
+
+    if (Math.abs(m) < 0.0001) {
+      // horizontal line
+      if (Math.abs(b) < 0.0001) {
+        xIntText = "every point on the x-axis (the line IS the x-axis)";
+      } else {
+        xIntText = "none (the line never crosses the x-axis)";
+      }
+    } else {
+      xInt = round2(-b / m);
+      xIntText = "(" + fmtCoord(xInt) + ", 0)";
+    }
+    yInt = bRound;
+    yIntText = "(0, " + fmtCoord(yInt) + ")";
+  }
+
+  document.getElementById("linear-eq-display").textContent = eqText;
+  document.getElementById("linear-x-int").textContent = xIntText;
+  document.getElementById("linear-y-int").textContent = yIntText;
+
+  // Draw the extended line through the two points
+  var midx = (p1.x + p2.x) / 2, midy = (p1.y + p2.y) / 2;
+  var len = Math.sqrt(dx * dx + dy * dy) || 1;
+  var ux = dx / len, uy = dy / len;
+  var farA = { x: midx - ux * 60, y: midy - uy * 60 };
+  var farB = { x: midx + ux * 60, y: midy + uy * 60 };
+  var pa = toPx(farA.x, farA.y), pb = toPx(farB.x, farB.y);
+  linearSvg.appendChild(svgEl("line", { x1: pa.px, y1: pa.py, x2: pb.px, y2: pb.py, stroke: "#1f4e8c", "stroke-width": 3 }));
+
+  // Intercept markers
+  if (xInt !== null && isFinite(xInt)) addIntercepMarker(linearSvg, xInt, 0, "#b3261e", "x-int");
+  if (yInt !== null && isFinite(yInt)) addIntercepMarker(linearSvg, 0, yInt, "#1b7a2e", "y-int");
+
+  // Draggable handles (draw last so they're on top)
+  linearPoints.forEach(function (pt, idx) {
+    var p = toPx(pt.x, pt.y);
+    var handle = svgEl("circle", { cx: p.px, cy: p.py, r: 10, fill: "#1f7a6c", stroke: "white", "stroke-width": 2, cursor: "grab" });
+    handle.setAttribute("data-idx", idx);
+    handle.addEventListener("pointerdown", function (evt) {
+      draggingHandle = idx;
+      linearSvg.setPointerCapture(evt.pointerId);
+    });
+    linearSvg.appendChild(handle);
+  });
+}
+
+function fmtEquationLinear(m, b) {
+  var mPart;
+  if (m === 1) mPart = "x";
+  else if (m === -1) mPart = "-x";
+  else mPart = m + "x";
+  var bPart;
+  if (b === 0) bPart = "";
+  else if (b > 0) bPart = " + " + b;
+  else bPart = " - " + Math.abs(b);
+  return mPart + bPart;
+}
+
+linearSvg.addEventListener("pointermove", function (evt) {
+  if (draggingHandle === null) return;
+  var pt = getSvgUserPoint(linearSvg, evt);
+  linearPoints[draggingHandle].x = clampToRange(round2(pt.x));
+  linearPoints[draggingHandle].y = clampToRange(round2(pt.y));
+  renderLinear();
+});
+linearSvg.addEventListener("pointerup", function () { draggingHandle = null; });
+linearSvg.addEventListener("pointerleave", function () { draggingHandle = null; });
+
+function resetLinear() {
+  linearPoints[0] = { x: linearDefaultPoints[0].x, y: linearDefaultPoints[0].y };
+  linearPoints[1] = { x: linearDefaultPoints[1].x, y: linearDefaultPoints[1].y };
+  renderLinear();
+}
+
+/* ============================================================
+   PARABOLA GRAPH (sliders for a, b, c)
+   ============================================================ */
+var parabolaSvg = document.getElementById("parabola-svg");
+var aSlider = document.getElementById("a-slider");
+var bSlider = document.getElementById("b-slider");
+var cSlider = document.getElementById("c-slider");
+
+function renderParabola() {
+  var a = parseFloat(aSlider.value);
+  var b = parseFloat(bSlider.value);
+  var c = parseFloat(cSlider.value);
+
+  document.getElementById("a-readout").textContent = a.toFixed(1);
+  document.getElementById("b-readout").textContent = b.toFixed(1);
+  document.getElementById("c-readout").textContent = c.toFixed(1);
+
+  drawGridAndAxes(parabolaSvg);
+
+  // Build equation display
+  var eqParts = [];
+  if (a !== 0) {
+    var aStr = (a === 1) ? "" : (a === -1 ? "-" : a.toFixed(1));
+    eqParts.push(aStr + "x\u00B2");
+  }
+  if (b !== 0) {
+    var bAbs = Math.abs(b).toFixed(1);
+    var bStr = (Math.abs(b) === 1) ? "x" : (bAbs + "x");
+    eqParts.push((b > 0 ? (eqParts.length ? " + " : "") : " - ") + bStr);
+  }
+  if (c !== 0 || eqParts.length === 0) {
+    eqParts.push((c >= 0 ? (eqParts.length ? " + " : "") : " - ") + Math.abs(c).toFixed(1));
+  }
+  document.getElementById("parabola-eq-display").textContent = "y = " + eqParts.join("");
+
+  // Draw curve
+  var pathPoints = [];
+  for (var x = PLOT_MIN; x <= PLOT_MAX + 0.001; x += 0.1) {
+    var y = a * x * x + b * x + c;
+    var p = toPx(x, y);
+    pathPoints.push(p.px.toFixed(1) + "," + p.py.toFixed(1));
+  }
+  var path = svgEl("polyline", { points: pathPoints.join(" "), fill: "none", stroke: "#1f4e8c", "stroke-width": 3 });
+  parabolaSvg.appendChild(path);
+
+  // y-intercept always at (0, c)
+  addIntercepMarker(parabolaSvg, 0, c, "#1b7a2e", "y-int");
+  document.getElementById("parabola-y-int").textContent = "(0, " + fmtCoord(c) + ")";
+
+  // x-intercepts
+  var xIntText;
+  if (Math.abs(a) < 0.0001) {
+    // degenerate: linear case y = bx + c
+    if (Math.abs(b) < 0.0001) {
+      xIntText = (Math.abs(c) < 0.0001) ? "every point (the graph IS the x-axis)" : "none";
+    } else {
+      var xr = round2(-c / b);
+      addIntercepMarker(parabolaSvg, xr, 0, "#b3261e", "x-int");
+      xIntText = "(" + fmtCoord(xr) + ", 0)  \u2014  note: a = 0, so this is actually a line!";
+    }
+  } else {
+    var disc = b * b - 4 * a * c;
+    if (disc > 0.0001) {
+      var r1 = round2((-b + Math.sqrt(disc)) / (2 * a));
+      var r2 = round2((-b - Math.sqrt(disc)) / (2 * a));
+      addIntercepMarker(parabolaSvg, r1, 0, "#b3261e", "x-int");
+      addIntercepMarker(parabolaSvg, r2, 0, "#b3261e", "x-int");
+      xIntText = "(" + fmtCoord(r1) + ", 0) and (" + fmtCoord(r2) + ", 0)";
+    } else if (Math.abs(disc) <= 0.0001) {
+      var r = round2(-b / (2 * a));
+      addIntercepMarker(parabolaSvg, r, 0, "#b3261e", "x-int");
+      xIntText = "(" + fmtCoord(r) + ", 0)  \u2014  exactly one (the vertex touches the x-axis)";
+    } else {
+      xIntText = "none  \u2014  the parabola never crosses the x-axis";
+    }
+  }
+  document.getElementById("parabola-x-int").textContent = xIntText;
+}
+
+aSlider.addEventListener("input", renderParabola);
+bSlider.addEventListener("input", renderParabola);
+cSlider.addEventListener("input", renderParabola);
+
+function resetParabola() {
+  aSlider.value = 1; bSlider.value = 0; cSlider.value = -4;
+  renderParabola();
+}
+
+/* Initial render */
+renderLinear();
+renderParabola();
+
+/* ============================================================
+   PRACTICE REVEAL TOGGLES
+   ============================================================ */
+function toggleSolution(id) {
+  document.getElementById(id).classList.toggle("shown");
+}
+
+/* ============================================================
+   ASSIGNMENT / QUIZ
+   ============================================================ */
+var quizScores = { q1: false, q2: false, q3: false, q4: false, q5: false };
+
+function numEq(a, b, tol) {
+  tol = tol || 0.01;
+  return Math.abs(parseFloat(a) - b) < tol;
+}
+
+function showFeedback(elId, correct, correctMsg, incorrectMsg) {
+  var el = document.getElementById(elId);
+  el.className = "feedback " + (correct ? "correct" : "incorrect");
+  el.innerHTML = (correct ? "&#10003; " : "&#10007; ") + (correct ? correctMsg : incorrectMsg);
+}
+
+/* Q1: y = 4x - 8  ->  x-int (2,0), y-int (0,-8) */
+function checkQ1() {
+  var xVal = document.getElementById("q1-x").value;
+  var yVal = document.getElementById("q1-y").value;
+  var ok = numEq(xVal, 2) && numEq(yVal, -8);
+  showFeedback("q1-feedback", ok,
+    "Correct! x-intercept (2, 0), y-intercept (0, -8).",
+    "Not quite. Set y = 0: 0 = 4x - 8 &rarr; x = 2. Set x = 0: y = 4(0) - 8 = -8.");
+  quizScores.q1 = ok;
+}
+
+/* Q2: 3x + 2y = 6  ->  x-int (2,0), y-int (0,3) */
+function checkQ2() {
+  var xVal = document.getElementById("q2-x").value;
+  var yVal = document.getElementById("q2-y").value;
+  var ok = numEq(xVal, 2) && numEq(yVal, 3);
+  showFeedback("q2-feedback", ok,
+    "Correct! x-intercept (2, 0), y-intercept (0, 3).",
+    "Not quite. Set y = 0: 3x = 6 &rarr; x = 2. Set x = 0: 2y = 6 &rarr; y = 3.");
+  quizScores.q2 = ok;
+}
+
+/* Q3: -2x + 5y = 10  ->  x-int (-5,0), y-int (0,2) */
+function checkQ3() {
+  var xVal = document.getElementById("q3-x").value;
+  var yVal = document.getElementById("q3-y").value;
+  var ok = numEq(xVal, -5) && numEq(yVal, 2);
+  showFeedback("q3-feedback", ok,
+    "Correct! x-intercept (-5, 0), y-intercept (0, 2).",
+    "Not quite. Set y = 0: -2x = 10 &rarr; x = -5. Set x = 0: 5y = 10 &rarr; y = 2.");
+  quizScores.q3 = ok;
+}
+
+/* Q4: y = x^2 - 9  ->  x-int (3,0) and (-3,0), y-int (0,-9) */
+function checkQ4() {
+  var x1 = parseFloat(document.getElementById("q4-x1").value);
+  var x2 = parseFloat(document.getElementById("q4-x2").value);
+  var yVal = document.getElementById("q4-y").value;
+  var xsOk = (isCloseSet([x1, x2], [3, -3]));
+  var ok = xsOk && numEq(yVal, -9);
+  showFeedback("q4-feedback", ok,
+    "Correct! x-intercepts (3, 0) and (-3, 0), y-intercept (0, -9).",
+    "Not quite. Set y = 0: x\u00B2 = 9 &rarr; x = 3 or x = -3. Set x = 0: y = -9.");
+  quizScores.q4 = ok;
+}
+
+/* Q5: y = x^2 - 2x - 8 = (x-4)(x+2)  ->  x-int (4,0) and (-2,0), y-int (0,-8) */
+function checkQ5() {
+  var x1 = parseFloat(document.getElementById("q5-x1").value);
+  var x2 = parseFloat(document.getElementById("q5-x2").value);
+  var yVal = document.getElementById("q5-y").value;
+  var xsOk = (isCloseSet([x1, x2], [4, -2]));
+  var ok = xsOk && numEq(yVal, -8);
+  showFeedback("q5-feedback", ok,
+    "Correct! Factoring gives (x - 4)(x + 2) = 0, so x-intercepts are (4, 0) and (-2, 0); y-intercept is (0, -8).",
+    "Not quite. Factor x\u00B2 - 2x - 8 = (x - 4)(x + 2) = 0 &rarr; x = 4 or x = -2. Set x = 0: y = -8.");
+  quizScores.q5 = ok;
+}
+
+function isCloseSet(vals, targets) {
+  if (vals.length !== targets.length) return false;
+  var used = [false, false];
+  for (var i = 0; i < vals.length; i++) {
+    var matched = false;
+    for (var j = 0; j < targets.length; j++) {
+      if (!used[j] && !isNaN(vals[i]) && Math.abs(vals[i] - targets[j]) < 0.01) {
+        used[j] = true;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) return false;
+  }
+  return true;
+}
+
+function calculateScore() {
+  var total = 5;
+  var score = 0;
+  var qKeys = Object.keys(quizScores);
+  for (var k = 0; k < qKeys.length; k++) { if (quizScores[qKeys[k]]) score++; }
+  document.getElementById("final-score-display").textContent = score + " / " + total;
+
+  var msg;
+  var pct = (score / total) * 100;
+  if (pct === 100) msg = "Excellent! You've got intercepts down cold.";
+  else if (pct >= 80) msg = "Great work! Review the one you missed and try again.";
+  else if (pct >= 60) msg = "Good effort. Revisit the Worked Examples tab, then try the missed questions again.";
+  else msg = "Keep practicing! Go back to the Definition and Worked Examples tabs, then retry each question.";
+  document.getElementById("final-score-message").textContent = msg;
+}
+</script>
+
+</body>
+</html>
